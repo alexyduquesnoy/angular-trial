@@ -5,12 +5,12 @@ export enum AppareilStatus {
 }
 
 export class Appareil {
-  name: string;
-  status: string;
 
-  constructor(name: string, status: AppareilStatus) {
-    this.name = name;
-    this.status = status;
+  constructor(
+    public id: number,
+    public name: string,
+    public status: AppareilStatus
+  ) {
   }
 
   switchOn() {
@@ -21,5 +21,3 @@ export class Appareil {
     this.status = AppareilStatus.off;
   }
 }
-
-// export {Appareil, AppareilStatus};

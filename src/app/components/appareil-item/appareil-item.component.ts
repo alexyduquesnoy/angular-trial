@@ -11,6 +11,7 @@ export class AppareilItemComponent implements OnInit {
 
   appareilStatusEnum = AppareilStatus;
 
+  @Input() id: number;
   @Input() index: number;
   @Input() appareilName: string;
   @Input() appareilStatus: string;

@@ -9,6 +9,7 @@ import { Appareil } from '../../shared/models/appareil.model';
 })
 export class AppareilViewComponent implements OnInit {
 
+  isAuth = false;
   appareils: Appareil[];
   lastUpdate: Promise<Date> = new Promise((resolve, reject) => {
     const date: Date = new Date();
@@ -18,10 +19,16 @@ export class AppareilViewComponent implements OnInit {
   });
 
   constructor(private appareilService: AppareilService) {
+    setTimeout(() => {
+      this.isAuth = true;
+    }, 2000);
   }
 
   ngOnInit() {
-    this.appareils = this.appareilService.appareils;
+    this.appareilService.appareilsSubject.subscribe((appareils: Appareil[]) => {
+      this.appareils = appareils;
+    });
+    this.appareilService.emitAppareilSubject();
   }
 
   onAllumer() {
