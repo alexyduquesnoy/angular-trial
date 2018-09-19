@@ -1,19 +1,17 @@
 import { Appareil, AppareilStatus } from '../models/appareil.model';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { log } from 'util';
 
 @Injectable()
 export class AppareilService {
 
   appareilsSubject = new Subject<Appareil[]>();
 
-  private appareils: Appareil[] = [
-    new Appareil(1, 'Machine à laver', AppareilStatus.off),
-    new Appareil(2, 'Frigo', AppareilStatus.off),
-    new Appareil(3, 'Ordinateur', AppareilStatus.on)
-  ];
+  private appareils: Appareil[] = [];
 
-  constructor() { }
+  constructor(private httpClient: HttpClient) { }
 
   emitAppareilSubject() {
     this.appareilsSubject.next(this.appareils.slice());
@@ -39,6 +37,8 @@ export class AppareilService {
   }
 
   switchOff(index): void {
+    console.log(this.appareils[index]);
+
     this.appareils[index].switchOff();
     this.emitAppareilSubject();
   }
@@ -54,5 +54,29 @@ export class AppareilService {
     const newAppareil = new Appareil(id, name, status);
     this.appareils.push(newAppareil);
     this.emitAppareilSubject();
+  }
+
+  saveAppareilsToServer() {
+    this.httpClient
+      .put('https://angular-trial-2b6f3.firebaseio.com/appareils.json', this.appareils)
+      .subscribe(() => {
+        console.log('Enregistrement terminé');
+      }, (error) => {
+        console.log('Une erreur a été rencontrée :' + error);
+      });
+  }
+
+  getAppareilsFromServer() {
+    this.httpClient
+      .get<any[]>('https://angular-trial-2b6f3.firebaseio.com/appareils.json')
+      .subscribe((response) => {
+        if (response instanceof Array) {
+          const appareils = response.map(element => new Appareil(element.id, element.name, element.status));
+          this.appareils = appareils;
+        }
+        this.emitAppareilSubject();
+      }, (error) => {
+        console.log(error);
+      });
   }
 }
